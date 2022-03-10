@@ -1,14 +1,12 @@
-<?php 
-error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED );
-session_cache_limiter('nocache');
-session_start();
+<?php
+require_once("setting.php");
 
 header( "Content-Type: application/json; charset=utf-8" );
 
 require_once("model.php");
 
 // *************************************
-// DB �ڑ�
+// DB 接続
 // *************************************
 $dbh = connectDb();
 
