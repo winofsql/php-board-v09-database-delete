@@ -4,7 +4,7 @@
 // *************************************
 function check_post() {
 
-    file_put_contents("check_post.log", print_r($_POST,true));
+    file_put_contents("check_post.log", print_r($_POST,true) ,FILE_APPEND );
 
     global $error;
 
