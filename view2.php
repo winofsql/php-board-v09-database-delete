@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="client.css?_=<?= time() ?>">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link id="link" rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
 <script>
 $(function(){
@@ -30,49 +32,77 @@ $(function(){
 
     $(".btn-outline-dark").on("click",function(){
 
-        if ( !confirm("削除してもよろしいですか?") ) {
-            return;
-        }
+        var target = $(this)
+        $( "#dialog-message" ).dialog({
+            modal: true,
+            title: "ダイアログのタイトルです",
+            close: function() {
+                $( this ).dialog( "close" );
+            },
+            buttons: [
+                { 
+                    text: "OK",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        entry_delete( target );
+                    }
+                },
+                {
+                    text: "キャンセル",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                    }
+                }
+            ]
+        });
 
-        var id = $(this).prop("id");
-        id = id.replace(/delete/g,"");
-
-        var formData = new FormData();
-
-        formData.append("id", id );
-
-        $.ajax({
-            url: "./delete.php",
-            type: "POST",
-            data: formData,
-            processData: false,  // jQuery がデータを処理しないよう指定
-            contentType: false   // jQuery が contentType を設定しないよう指定
-        })
-        .done(function( data, textStatus ){
-            console.log( "status:" + textStatus );
-            console.log( "data:" + JSON.stringify(data, null, "    ") );
-
-            var kensu = parseInt( $("#data_head").data("kensu") );
-            kensu--;
-            $("#data_head").data("kensu", kensu);
-            $("#data_head").text( "投稿一覧 (" + kensu + "件)" );
-            
-            $('#disp' + data.id).fadeOut(800);
-
-        })
-        .fail(function(jqXHR, textStatus, errorThrown ){
-            console.log( "status:" + textStatus );
-            console.log( "errorThrown:" + errorThrown );
-        })
-        .always(function() {
-
-        })
-        ;
     });
 
     <?= $clear ?>
 
 });
+
+// *************************************
+// $.ajax 記事削除
+// *************************************
+function entry_delete( target ) {
+
+    var id = target.prop("id");
+    id = id.replace(/delete/g,"");
+
+    var formData = new FormData();
+
+    formData.append("id", id );
+
+    $.ajax({
+        url: "./delete.php",
+        type: "POST",
+        data: formData,
+        processData: false,  // jQuery がデータを処理しないよう指定
+        contentType: false   // jQuery が contentType を設定しないよう指定
+    })
+    .done(function( data, textStatus ){
+        console.log( "status:" + textStatus );
+        console.log( "data:" + JSON.stringify(data, null, "    ") );
+
+        var kensu = parseInt( $("#data_head").data("kensu") );
+        kensu--;
+        $("#data_head").data("kensu", kensu);
+        $("#data_head").text( "投稿一覧 (" + kensu + "件)" );
+        
+        $('#disp' + data.id).fadeOut(800);
+
+    })
+    .fail(function(jqXHR, textStatus, errorThrown ){
+        console.log( "status:" + textStatus );
+        console.log( "errorThrown:" + errorThrown );
+    })
+    .always(function() {
+
+    })
+    ;
+
+}
 </script>
 
 </head>
@@ -90,6 +120,10 @@ $(function(){
     <div id="data_entry">
         <?= $log_text ?>
     </div>
+</div>
+
+<div id="dialog-message" style='display:none;'>
+削除してもよろしいですか?
 </div>
 </body>
 </html>
